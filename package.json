@@ -1,0 +1,30 @@
+{
+  "name": "atividade-avaliativa-1",
+  "version": "1.0.0",
+  "description": "Primeira atividade avaliativa da materia Programação para Internet",
+  "keywords": [
+    "http",
+    "express",
+    "node",
+    "javascript"
+  ],
+  "homepage": "https://github.com/Dimitri-Stocker/atividadeAvaliativaPPI_01#readme",
+  "bugs": {
+    "url": "https://github.com/Dimitri-Stocker/atividadeAvaliativaPPI_01/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dimitri-Stocker/atividadeAvaliativaPPI_01.git"
+  },
+  "license": "ISC",
+  "author": "Dimitri Stocker",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
