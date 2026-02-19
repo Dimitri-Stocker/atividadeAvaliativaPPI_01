@@ -11,33 +11,21 @@ server.use(express.urlencoded({extended:true}));
 //recheando o servidor com funcionalidades
 
 server.get("/", (requisicao, resposta) => {
-    resposta.writeHead(200, {'Content-Type' : 'text/html'});
-    resposta.write(`
-        <DOCTYPE html>
-        <html lang="pt-br">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Atividade avaliativa 1 - Node, Express, HTTP</title>
-        </head>
-
-        <body>
-            <h1>Cálculo de Reajuste Salarial</h1>
-            <h2>Olá, mundo! </h2>
-        </body>
-
-        </html>
-    `);
-    resposta.end();
-
-    
+    resposta.send(`
+        <h1>Cálculo de Reajuste Salarial </h1>
+        <h2>Para realizar o cálculo do reajuste salarial do funcionário, siga as instruções: </h2>
+            <ol>
+                <li>No final da URL, insira "/calculoSalario" </li>
+                <li>Depois, digite o símbolo "?", digite "idade=" e a idade do funcionário. Ex: idade=20 </li>
+                <li>Digite o símbolo "&", e insira o sexo do funcionário. Deve ser M ou F. Ex: sexo=F</li>
+                <li>Novamente digite o símbolo "&" e o comando salarioBase. Ex: salarioBase=2000 </li>
+                <li>O próximo comando deve ser anoContratacao. Ex: anoContratacao=1998 </li>
+                <li>Finalmente, insira a matrícula do funcionário. Ex: matricula=12345 </li>
+                <li>A URL completa deverá ficar como no exemplo: "http://localhost:3000/calculoSalario?idade=20&sexo=F&salarioBase=2000&anoContratacao=1998&matricula=12345</li>
+            </ol>`);
 });
 
 server.get("/calculoSalario", (requisicao, resposta) => {
-     resposta.writeHead(200, {'Content-Type' : 'text/html'});
-
-
     //Variáveis de entrada do usuário
     let idade = requisicao.query.idade;
     let sexo = requisicao.query.sexo;
@@ -50,64 +38,28 @@ server.get("/calculoSalario", (requisicao, resposta) => {
     let reajuste, desconto, acrescimo, novoSalario;
 
     //Verificando Erros
-    if (idade < 16) {
-        resposta.write(` <DOCTYPE html>
-        <html lang="pt-br">
-        <head>
-            <meta charset="UTF-8">
-            <title>Erro.</title>
-        </head>
-
-        <body>
-            <h3>Erro. Idade deve ser maior que 16. </h3>
-        </body>
-        </html>`);
-        resposta.end();
+    if (idade < 16 || typeof idade == 'string') {
+        resposta.send(`
+            <head><title>Erro.</title></head>
+            <h3>Erro. Idade deve ser maior que 16. </h3>`);
     }
 
     if (anoContratacao < 1960) {
-        resposta.write(` <DOCTYPE html>
-        <html lang="pt-br">
-        <head>
-            <meta charset="UTF-8">
-            <title>Erro.</title>
-        </head>
-
-        <body>
-            <h3>Erro. O ano de contratação deve ser após 1960. </h3>
-        </body>
-        </html>`);
-        resposta.end();
+        resposta.send(`
+            <head><title>Erro.</title></head>
+            <h3>Erro. O ano de contratação deve ser após 1960. </h3>`);
     }
 
     if (salarioBase <= 0) {
-        resposta.write(` <DOCTYPE html>
-        <html lang="pt-br">
-        <head>
-            <meta charset="UTF-8">
-            <title>Erro.</title>
-        </head>
-
-        <body>
-            <h3>Erro. O salário deve ser um número válido. </h3>
-        </body>
-        </html>`);
-        resposta.end();
+        resposta.send(`
+             <head><title>Erro.</title></head>
+             <h3>Erro. O salário deve ser um número válido. </h3>`);
     }
 
     if (matricula <= 0){
-         resposta.write(` <DOCTYPE html>
-        <html lang="pt-br">
-        <head>
-            <meta charset="UTF-8">
-            <title>Erro.</title>
-        </head>
-
-        <body>
-            <h3>Erro. A matrícula deve ser um número maior que 0. </h3>
-        </body>
-        </html>`);
-        resposta.end();
+         resposta.send(`
+            <head><title>Erro.</title></head>
+             <h3>Erro. A matrícula deve ser um número maior que 0. </h3>`);
     }
 
     //Código de reajuste
@@ -140,10 +92,15 @@ server.get("/calculoSalario", (requisicao, resposta) => {
                     novoSalario = salarioBase + reajuste + acrescimo;
                 }
                 break;
+
+            default: resposta.send(`
+                 <head><title>Erro.</title></head>
+                <h3>Opção inválida. Sexo deve ser F ou M.</h3>`);
+                break;
         }
     }
 
-    else if (idade < 69) {
+    else if (idade < 70) {
         switch(sexo){
           case 'm':case'M': 
                 reajuste = (salarioBase * 8) / 100;
@@ -168,6 +125,11 @@ server.get("/calculoSalario", (requisicao, resposta) => {
                     acrescimo = 14;
                     novoSalario = salarioBase + reajuste + acrescimo;
                 }
+                break;
+
+            default: resposta.send(`
+                 <head><title>Erro.</title></head>
+                <h3>Opção inválida. Sexo deve ser F ou M.</h3>`);
                 break;
         }
     }
@@ -198,17 +160,19 @@ server.get("/calculoSalario", (requisicao, resposta) => {
                     novoSalario = salarioBase + reajuste + acrescimo;
                 }
                 break;
+
+            default: resposta.send(`
+                 <head><title>Erro.</title></head>
+                <h3>Opção inválida. Sexo deve ser F ou M.</h3>`);
+                break;
         }
     }
 
-    resposta.write(` <DOCTYPE html>
-        <html lang="pt-br">
+    resposta.send(`
         <head>
-            <meta charset="UTF-8">
             <title>Salário reajustado</title>
         </head>
 
-        <body>
             <h3>Dados do usuário: </h3>
             <h4>Idade: ${idade}</h4>
             <h4>Sexo: ${sexo}</h4>
@@ -216,9 +180,8 @@ server.get("/calculoSalario", (requisicao, resposta) => {
             <h4>Ano de Contratação: ${anoContratacao}</h4>
             <h4>Matrícula: ${matricula}</h4>
             <h2>Seu salário reajustado é: R$${novoSalario}</h3>
-        </body>
-        </html>`);
-    resposta.end();
+        `);
+    
 });
 
 
