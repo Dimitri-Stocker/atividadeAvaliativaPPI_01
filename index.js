@@ -12,6 +12,7 @@ server.use(express.urlencoded({extended:true}));
 
 server.get("/", (requisicao, resposta) => {
     resposta.send(`
+        <head> <title> Reajuste Salarial </title> </head>
         <h1>Cálculo de Reajuste Salarial </h1>
         <h2>Para realizar o cálculo do reajuste salarial do funcionário, siga as instruções: </h2>
             <ol>
@@ -21,45 +22,45 @@ server.get("/", (requisicao, resposta) => {
                 <li>Novamente digite o símbolo "&" e o comando salarioBase. Ex: salarioBase=2000 </li>
                 <li>O próximo comando deve ser anoContratacao. Ex: anoContratacao=1998 </li>
                 <li>Finalmente, insira a matrícula do funcionário. Ex: matricula=12345 </li>
-                <li>A URL completa deverá ficar como no exemplo: "http://localhost:3000/calculoSalario?idade=20&sexo=F&salarioBase=2000&anoContratacao=1998&matricula=12345</li>
+                <li>A URL completa deverá ficar como no exemplo: "reajuste-salarial.vercel.app/calculoSalario?idade=20&sexo=F&salarioBase=2000&anoContratacao=1998&matricula=12345</li>
             </ol>`);
 });
 
 server.get("/calculoSalario", (requisicao, resposta) => {
     //Variáveis de entrada do usuário
-    let idade = requisicao.query.idade;
+    let idade = +requisicao.query.idade;
     let sexo = requisicao.query.sexo;
     let salarioBase = +requisicao.query.salarioBase;
-    let anoContratacao = requisicao.query.anoContratacao;
-    let matricula = requisicao.query.matricula;
+    let anoContratacao = +requisicao.query.anoContratacao;
+    let matricula = +requisicao.query.matricula;
 
     const anoAtual = 2026;
 
     let reajuste, desconto, acrescimo, novoSalario;
 
     //Verificando Erros
-    if (idade < 16 || typeof idade == 'string') {
+    if (idade < 16 || isNaN(idade)) {
         resposta.send(`
             <head><title>Erro.</title></head>
-            <h3>Erro. Idade deve ser maior que 16. </h3>`);
+            <h3>Erro no campo Idade. Confira se a idade foi inserida e se o valor digitado não é uma letra ou um número menor que 16.</h3>`);
     }
 
-    if (anoContratacao < 1960) {
+    if (anoContratacao < 1960 || isNaN(anoContratacao)) {
         resposta.send(`
             <head><title>Erro.</title></head>
-            <h3>Erro. O ano de contratação deve ser após 1960. </h3>`);
+            <h3>Erro no campo anoContratacao. Confira se o ano de contratação do funcionário foi inserido e se o valor digitado não é uma letra ou uma data menor que 1960. </h3>`);
     }
 
-    if (salarioBase <= 0) {
+    if (salarioBase <= 0 || isNaN(salarioBase)) {
         resposta.send(`
              <head><title>Erro.</title></head>
-             <h3>Erro. O salário deve ser um número válido. </h3>`);
+             <h3>Erro no campo salarioBase. Confira se o salário do funcionário foi inserido e se o valor digitado não é uma letra ou um número menor que 0. </h3>`);
     }
 
-    if (matricula <= 0){
+    if (matricula <= 0 || isNaN(matricula)){
          resposta.send(`
             <head><title>Erro.</title></head>
-             <h3>Erro. A matrícula deve ser um número maior que 0. </h3>`);
+             <h3>Erro no campo matricula. Confira se a matrícula do funcionário foi inserida e se o valor digitado não é uma letra ou um número menor que 0. </h3>`);
     }
 
     //Código de reajuste
@@ -183,8 +184,6 @@ server.get("/calculoSalario", (requisicao, resposta) => {
         `);
     
 });
-
-
 
 server.listen(porta, host, () => {
     console.log(`Servidor escutando em http://${host}:${porta}`);
